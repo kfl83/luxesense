@@ -6,13 +6,28 @@ export default function Home() {
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  async function analyze() {
-    setLoading(true);
-    const res = await fetch("/api/analyze", { method: "POST" });
-    const data = await res.json();
-    setResult(data);
-    setLoading(false);
-  }
+async function analyze() {
+  setLoading(true);
+
+  const res = await fetch("/api/analyze", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      price: 12000,
+      images: [
+        "data:image/jpeg;base64,TEST"
+      ],
+    })
+  });
+
+  const data = await res.json();
+  console.log("API response:", data);
+
+  setResult(data);
+  setLoading(false);
+}
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-neutral-50">
@@ -32,14 +47,12 @@ export default function Home() {
 
         {loading && <p className="text-sm">Taking a careful look…</p>}
 
-        {result && (
-          <div className="text-sm space-y-2">
-            <p><strong>Verdict:</strong> {result.verdict}</p>
-            <p>{result.condition}</p>
-            <p>{result.price}</p>
-            <p>{result.explanation}</p>
-          </div>
-        )}
+	{result && (
+  	  <div className="text-sm whitespace-pre-wrap">
+    	    {result.analysis}
+  	  </div>
+	)}
+
 
         <button className="w-full py-2 rounded-lg border">
           Review today’s drops
